@@ -1,0 +1,56 @@
+syntax = "proto3";
+package supplier;
+option go_package = "./;supplier";
+
+service SupplierService{
+    rpc CreateSupplier(CreateSupplierRequest) returns (CreateSupplierResponse);
+    rpc SupplierByID(SupplierByIDRequest) returns (SupplierByIDResponse);
+    rpc SupplierList(SupplierListRequest) returns (SupplierListResponse);
+    rpc UpdateSupplier(UpdateSupplierRequest) returns (UpdateSupplierResponse);
+    rpc DeleteSupplier(DeleteSupplierRequest) returns (DeleteSupplierResponse);
+}
+message Supplier {
+    string id = 1;
+    string country =2;
+    string city  =3;
+    string state =4;
+    string zipcode =5;
+    string street =6;
+    string latitude =7;
+    string longitude=8;
+    string email=9;
+    string website=10;
+    string phone=11;
+    string created_on=12;
+    string updated_on=13;
+
+}
+message CreateSupplierRequest {
+    Supplier supplier = 1;
+}
+message CreateSupplierResponse {
+    string id = 1;
+}
+
+message SupplierByIDRequest {
+    string id = 1;
+}
+
+message SupplierByIDResponse {
+    Supplier supplier= 1;
+}
+message SupplierListRequest {}
+
+message SupplierListResponse {
+    repeated Supplier supplier = 1;
+}
+
+message UpdateSupplierRequest {
+    Supplier supplier = 1;
+}
+message UpdateSupplierResponse {}
+
+message DeleteSupplierRequest {
+    string id = 1;
+}
+message DeleteSupplierResponse {}

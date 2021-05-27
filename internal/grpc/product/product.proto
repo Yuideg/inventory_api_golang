@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package product;
+option go_package = "./;product";
+
+service ProductService{
+    rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+    rpc ProductByID(ProductByIDRequest) returns (ProductByIDResponse);
+    rpc ProductList(ProductListRequest) returns (ProductListResponse);
+    rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
+    rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+}
+message Product {
+    string id = 1;
+    string barcode=2;
+    string product_name=3;
+    string brand =4;
+    string image=5;
+    string cost=6;
+    string price=7;
+    string unit=8;
+    string tax=9;
+    string  mfg_date=10;
+    string stock_id=11 ;
+    string expired_at=12;
+    string created_on=13;
+    string updated_on=14;
+
+}
+message CreateProductRequest {
+    Product product = 1;
+}
+message CreateProductResponse {
+    string id = 1;
+}
+
+message ProductByIDRequest {
+    string id = 1;
+}
+
+message ProductByIDResponse {
+    Product product = 1;
+}
+message ProductListRequest {}
+
+message ProductListResponse {
+    repeated Product products = 1;
+}
+
+message UpdateProductRequest {
+    Product product = 1;
+}
+message UpdateProductResponse {}
+
+message DeleteProductRequest {
+    string id = 1;
+}
+
+message DeleteProductResponse {}

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package stock;
+option go_package = "./;stock";
+
+service StockService{
+    rpc CreateStock(CreateStockRequest) returns (CreateStockResponse);
+    rpc StockByID(StockByIDRequest) returns (StockByIDResponse);
+    rpc StockList(StockListRequest) returns (StockListResponse);
+    rpc UpdateStock(UpdateStockRequest) returns (UpdateStockResponse);
+    rpc DeleteStock(DeleteStockRequest) returns (DeleteStockResponse);
+}
+
+message Stock {
+    string id = 1;
+    string products_code =2;
+    string products_name=3;
+    string quantity =4;
+    string supplier_id=5;
+    string created_on=9;
+    string updated_on=10;
+
+}
+message CreateStockRequest {
+    Stock stock = 1;
+}
+message CreateStockResponse {
+    string id = 1;
+}
+
+message StockByIDRequest {
+    string id = 1;
+}
+
+message StockByIDResponse {
+    Stock stock = 1;
+}
+message StockListRequest {}
+
+message StockListResponse {
+    repeated Stock stock = 1;
+}
+
+message UpdateStockRequest {
+    Stock stock = 1;
+}
+
+message UpdateStockResponse {}
+
+message DeleteStockRequest {
+    string id = 1;
+}
+
+message DeleteStockResponse {}

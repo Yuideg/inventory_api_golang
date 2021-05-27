@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package role;
+option go_package = "./;role";
+
+service RoleService{
+    rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc RoleByID(RoleByIDRequest) returns (RoleByIDResponse);
+    rpc RoleList(RoleListRequest) returns (RoleListResponse);
+    rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse);
+    rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse);
+}
+
+message Role {
+    uint32 id = 1;
+    string name = 2;
+}
+message CreateRoleRequest {
+    Role role = 1;
+}
+message CreateRoleResponse {
+    uint32 id = 1;
+}
+
+message RoleByIDRequest {
+    string id = 1;
+}
+
+message RoleByIDResponse {
+    Role role = 1;
+}
+message RoleListRequest {}
+
+message RoleListResponse {
+    repeated Role roles = 1;
+}
+
+message UpdateRoleRequest {
+    Role role = 1;
+}
+
+message UpdateRoleResponse {}
+
+message DeleteRoleRequest {
+    string id = 1;
+}
+
+message DeleteRoleResponse {}

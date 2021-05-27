@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package customer;
+option go_package = "./;customer";
+
+service CustomerService{
+    rpc CreateCustomer(CreateCustomerRequest) returns (CreateCustomerResponse);
+    rpc CustomerByID(CustomerByIDRequest) returns (CustomerByIDResponse);
+    rpc CustomerList(CustomerListRequest) returns (CustomerListResponse);
+    rpc UpdateCustomer(UpdateCustomerRequest) returns (UpdateCustomerResponse);
+    rpc DeleteCustomer(DeleteCustomerRequest) returns (DeleteCustomerResponse);
+}
+message Customer {
+    string id = 1;
+    string username=2;
+    string password=3;
+    string first_name=4;
+    string last_name=5;
+    string image=6;
+    string gender=7;
+    string email=8;
+    string country=9;
+    string city=10;
+    string state=12;
+    int32 zipcode=13;
+    string street=14;
+    string latitude=15;
+    string longitude=16;
+    string  phone=17;
+    string role_id=18;
+    string created_on =19;
+
+}
+message CreateCustomerRequest {
+    Customer customer = 1;
+}
+message CreateCustomerResponse {
+    string id = 1;
+}
+
+message CustomerByIDRequest {
+    string id = 1;
+}
+
+message CustomerByIDResponse {
+    Customer customer = 1;
+}
+message CustomerListRequest {}
+
+message CustomerListResponse {
+    repeated Customer customers = 1;
+}
+
+message UpdateCustomerRequest {
+    Customer customer = 1;
+}
+
+message UpdateCustomerResponse {}
+
+message DeleteCustomerRequest {
+    string id = 1;
+}
+
+message DeleteCustomerResponse {}
