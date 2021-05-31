@@ -17,8 +17,8 @@ func NewSupplierUsecase(r module.SupplierRepository) module.SupplierUsecase {
 
 }
 
-func (s *SupplierUsecaseMP) Get() ([]model.Supplier, error) {
-	roles, errs := s.repo.Get()
+func (s *SupplierUsecaseMP) GetSuppliers() ([]model.Supplier, error) {
+	roles, errs := s.repo.GetSuppliers()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -27,8 +27,8 @@ func (s *SupplierUsecaseMP) Get() ([]model.Supplier, error) {
 	return roles, nil
 }
 
-func (s *SupplierUsecaseMP) GetById(id uuid.UUID) (*model.Supplier, error) {
-	role, errs := s.repo.GetById(id)
+func (s *SupplierUsecaseMP) GetSupplierByID(id uuid.UUID) (*model.Supplier, error) {
+	role, errs := s.repo.GetSupplierByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -37,8 +37,8 @@ func (s *SupplierUsecaseMP) GetById(id uuid.UUID) (*model.Supplier, error) {
 	return  role, nil
 }
 
-func (s *SupplierUsecaseMP) Create(sup model.Supplier) (pgconn.CommandTag, error) {
-	pgcom, errs := s.repo.Create(sup)
+func (s *SupplierUsecaseMP) CreateSupplier(sup model.Supplier) (pgconn.CommandTag, error) {
+	pgcom, errs := s.repo.CreateSupplier(sup)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -46,8 +46,8 @@ func (s *SupplierUsecaseMP) Create(sup model.Supplier) (pgconn.CommandTag, error
 	return pgcom, nil
 }
 
-func (s *SupplierUsecaseMP) Update(sup *model.Supplier) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(sup)
+func (s *SupplierUsecaseMP) UpdateSupplier(sup *model.Supplier) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateSupplier(sup)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -55,8 +55,8 @@ func (s *SupplierUsecaseMP) Update(sup *model.Supplier) (pgconn.CommandTag, erro
 	return commadtag, nil
 }
 
-func (s *SupplierUsecaseMP) Delete(id uuid.UUID) error {
-	errs := s.repo.Delete(id)
+func (s *SupplierUsecaseMP) DeleteSupplier(id uuid.UUID) error {
+	errs := s.repo.DeleteSupplier(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

@@ -6,234 +6,266 @@ import (
 	"net/http"
 )
 //AllRouting generates all possible routes int the application
-func AllRouting(ch rest.CustomerHandler,oh rest.OrderHandler,ph rest.ProductHandler,r rest.RoleHandler,
-	sth rest.StaffHandler,stoh rest.StockHandler,suph rest.SupplierHandler) []routers.Router {
+func AllRouting(ch  rest.UserHandler, oh rest.OrderHandler, ph rest.ProductHandler, r rest.RoleHandler, stoh rest.StockHandler, suph rest.SupplierHandler) []routers.Router {
 	return []routers.Router{
 		{
 			Method:      http.MethodGet,
-			Path:        "/customers",
-			Handler:     ch.Customers,
-			MiddleWares: nil,
+			Path:        "/users",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
+			Handler:    ch.UsersHandler,
+
+		},
+		{
+			Method:      http.MethodPost,
+			Path:        "/login",
+			Authenticated: nil,
+			Authorized: nil,
+			Handler:    ch.LoginUserHandler,
+
 		},
 		{
 			Method:      http.MethodGet,
-			Path:        "/customers/:id",
-			Handler:     ch.CustomerById,
-			MiddleWares: nil,
+			Path:        "/users/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
+			Handler:     ch.GetUserByIDHandler,
+
 		},
 
 		{
 			Method:      http.MethodPost,
-			Path:        "/customers",
-			Handler:     ch.CreateCustomer,
-			MiddleWares: nil,
+			Path:        "/users",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
+			Handler:     ch.CreateUserHandler,
+
 		},
 		{
 			Method:      http.MethodPut,
-			Path:        "/customers/:id",
-			Handler:     ch.UpdateCustomer,
-			MiddleWares: nil,
+			Path:        "/users/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
+			Handler:     ch.UpdateUserHandler,
 		},
 
 		{
 			Method:      http.MethodDelete,
-			Path:        "/customers/:id",
-			Handler:     ch.DeleteCustomer,
-			MiddleWares: nil,
+			Path:        "/users/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
+			Handler:     ch.DeleteUserHandler,
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/orders",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     oh.Orders,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/orders/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     oh.OrderById,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodPost,
 			Path:        "/orders",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     oh.CreateOrder,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodPut,
 			Path:        "/orders/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     oh.UpdateOrder,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodDelete,
 			Path:        "/orders/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     oh.DeleteOrder,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/products",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     ph.Products,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/products/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     ph.ProductById,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodPost,
 			Path:        "/products",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     ph.CreateProduct,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodPut,
 			Path:        "/products/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     ph.UpdateProduct,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodDelete,
 			Path:        "/products/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     ph.DeleteProduct,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/role",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     r.Roles,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/role/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     r.RoleById,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodPost,
 			Path:        "/role",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     r.CreateRole,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodPut,
 			Path:        "/role/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     r.UpdateRole,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodDelete,
 			Path:        "/role/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     r.DeleteRole,
-			MiddleWares: nil,
-		},
-		{
-			Method:      http.MethodGet,
-			Path:        "/staff",
-			Handler:     sth.Staffs,
-			MiddleWares: nil,
-		},
-		{
-			Method:      http.MethodGet,
-			Path:        "/staff/:id",
-			Handler:     sth.StaffById,
-			MiddleWares: nil,
-		},
 
-		{
-			Method:      http.MethodPost,
-			Path:        "/staff",
-			Handler:     sth.CreateStaff,
-			MiddleWares: nil,
-		},
-		{
-			Method:      http.MethodPut,
-			Path:        "/staff/:id",
-			Handler:     sth.UpdateStaff,
-			MiddleWares: nil,
-		},
-		{
-			Method:      http.MethodDelete,
-			Path:        "/staff/:id",
-			Handler:     sth.DeleteStaff,
-			MiddleWares: nil,
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/stocks",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     stoh.Stocks,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/stocks/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     stoh.StockById,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodPost,
 			Path:        "/stocks",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     stoh.CreateStock,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodPut,
 			Path:        "/stocks/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     stoh.UpdateStock,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodDelete,
 			Path:        "/stocks/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     stoh.DeleteStock,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/supplier",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     suph.Suppliers,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodGet,
 			Path:        "/supplier/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     suph.SupplierById,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodPost,
 			Path:        "/supplier",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     suph.CreateSupplier,
-			MiddleWares: nil,
+
 		},
 		{
 			Method:      http.MethodPut,
 			Path:        "/supplier/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     suph.UpdateSupplier,
-			MiddleWares: nil,
+
 		},
 
 		{
 			Method:      http.MethodDelete,
 			Path:        "/supplier/:id",
+			Authenticated: ch.Authenticated,
+			Authorized: ch.Authorized,
 			Handler:     suph.DeleteSupplier,
-			MiddleWares: nil,
+
 		},
 	}
-
-
 }
 

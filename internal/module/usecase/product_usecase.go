@@ -5,6 +5,7 @@ import (
 	"github.com/Yideg/inventory_app/internal/module"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ProductUsecaseIMP struct {
@@ -16,8 +17,8 @@ func  NewProductUsecase(r module.ProductRepository) module.ProductUsecase {
 
 }
 
-func (s *ProductUsecaseIMP) Get() ([]model.Product, error) {
-	products, errs := s.repo.Get()
+func (s *ProductUsecaseIMP) GetProducts() ([]model.Product, error) {
+	products, errs := s.repo.GetProducts()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -26,8 +27,8 @@ func (s *ProductUsecaseIMP) Get() ([]model.Product, error) {
 	return products, nil
 }
 
-func (s *ProductUsecaseIMP) GetById(id string) (*model.Product, error) {
-	product, errs := s.repo.GetById(id)
+func (s *ProductUsecaseIMP) GetProductsByID(id uuid.UUID) (*model.Product, error) {
+	product, errs := s.repo.GetProductsByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -36,8 +37,8 @@ func (s *ProductUsecaseIMP) GetById(id string) (*model.Product, error) {
 	return  product, nil
 }
 
-func (s *ProductUsecaseIMP) Create(product model.Product) (pgconn.CommandTag, error) {
-	pgcom, errs := s.repo.Create(product)
+func (s *ProductUsecaseIMP) CreateProduct(product model.Product) (pgconn.CommandTag, error) {
+	pgcom, errs := s.repo.CreateProduct(product)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -45,8 +46,8 @@ func (s *ProductUsecaseIMP) Create(product model.Product) (pgconn.CommandTag, er
 	return pgcom, nil
 }
 
-func (s *ProductUsecaseIMP) Update(product *model.Product) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(product)
+func (s *ProductUsecaseIMP) UpdateProduct(product *model.Product) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateProduct(product)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -54,8 +55,8 @@ func (s *ProductUsecaseIMP) Update(product *model.Product) (pgconn.CommandTag, e
 	return commadtag, nil
 }
 
-func (s *ProductUsecaseIMP) Delete(id string) error {
-	errs := s.repo.Delete(id)
+func (s *ProductUsecaseIMP) DeleteProduct(id uuid.UUID) error {
+	errs := s.repo.DeleteProduct(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

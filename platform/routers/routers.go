@@ -3,8 +3,6 @@ package routers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/rileyr/middleware"
-	"github.com/rileyr/middleware/wares"
 )
 
 type Routers interface {
@@ -14,8 +12,10 @@ type Routers interface {
 type Router struct {
 	Method      string
 	Path        string
+	Authenticated  func(handle *gin.Context)
+	Authorized  func(handle *gin.Context)
 	Handler     func(handle *gin.Context)
-	MiddleWares []middleware.Middleware
+
 }
 type routing struct {
 	host    string
@@ -33,17 +33,13 @@ func NewRouting(host, port string, routers []Router) Routers {
 
 func (r *routing) Serve() {
 	server := gin.Default()
+	api:=server.Group("api/v1")
 	for _, router := range r.routers {
-		if router.MiddleWares == nil {
-			server.Handle(router.Method, router.Path, router.Handler)
+		if router.Authenticated == nil && router.Authorized==nil {
+			fmt.Println("login start line 39")
+			api.Handle(router.Method, router.Path , router.Handler)
 		} else {
-			s := middleware.NewStack()
-			for _, middle := range router.MiddleWares {
-				s.Use(middle)
-			}
-			s.Use(wares.RequestID)
-			s.Use(wares.Logging)
-			server.Handle(router.Method, router.Path, router.Handler)
+			api.Handle(router.Method, router.Path,router.Authenticated, router.Authorized, router.Handler)
 		}
 	}
 	addr := fmt.Sprintf("%s:%s", r.host, r.port)

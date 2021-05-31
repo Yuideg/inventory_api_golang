@@ -17,18 +17,18 @@ func  NewStockUsecase(r module.StockRepository) module.StockUsecae {
 
 }
 
-func (s *StockUsecaseMP) Get() ([]model.Stock, error) {
-	roles, errs := s.repo.Get()
+func (s *StockUsecaseMP) GetStocks() ([]model.Stock, error) {
+	stocks, errs := s.repo.GetStocks()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
 	}
 
-	return roles, nil
+	return stocks, nil
 }
 
-func (s *StockUsecaseMP) GetById(id uuid.UUID) (*model.Stock, error) {
-	role, errs := s.repo.GetById(id)
+func (s *StockUsecaseMP) GetStockByID(id uuid.UUID) (*model.Stock, error) {
+	role, errs := s.repo.GetStockByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -37,8 +37,8 @@ func (s *StockUsecaseMP) GetById(id uuid.UUID) (*model.Stock, error) {
 	return  role, nil
 }
 
-func (s *StockUsecaseMP) Create(stock model.Stock) (pgconn.CommandTag, error) {
-	pgcom, errs := s.repo.Create(stock)
+func (s *StockUsecaseMP) CreateStock(stock model.Stock) (pgconn.CommandTag, error) {
+	pgcom, errs := s.repo.CreateStock(stock)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -46,8 +46,8 @@ func (s *StockUsecaseMP) Create(stock model.Stock) (pgconn.CommandTag, error) {
 	return pgcom, nil
 }
 
-func (s *StockUsecaseMP) Update(stock *model.Stock) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(stock)
+func (s *StockUsecaseMP) UpdateStock(stock *model.Stock) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateStock(stock)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -55,8 +55,8 @@ func (s *StockUsecaseMP) Update(stock *model.Stock) (pgconn.CommandTag, error) {
 	return commadtag, nil
 }
 
-func (s *StockUsecaseMP) Delete(id uuid.UUID) error {
-	errs := s.repo.Delete(id)
+func (s *StockUsecaseMP) DeleteStock(id uuid.UUID) error {
+	errs := s.repo.DeleteStock(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

@@ -19,7 +19,7 @@ func NewRoleRepo(pg *pgxpool.Pool, c context.Context) *RolePgxIMP {
 	return &RolePgxIMP{pgx: pg, ctx: c}
 
 }
-func (pgx *RolePgxIMP) Create(role model.Role) (pgconn.CommandTag, error) {
+func (pgx *RolePgxIMP) CreateRole(role model.Role) (pgconn.CommandTag, error) {
 	query := "INSERT INTO role (id,name) values($1, $2)"
 	commands, err := pgx.pgx.Exec(pgx.ctx, query, role.ID, role.Name)
 	if err != nil {
@@ -28,7 +28,7 @@ func (pgx *RolePgxIMP) Create(role model.Role) (pgconn.CommandTag, error) {
 
 	return commands, nil
 }
-func (pgx *RolePgxIMP) GetById(id uuid.UUID) (*model.Role, error) {
+func (pgx *RolePgxIMP) GetRoleByID(id uuid.UUID) (*model.Role, error) {
 	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM role WHERE id = $1", id)
 	fmt.Println("id =", id)
 	role := model.Role{}
@@ -40,7 +40,7 @@ func (pgx *RolePgxIMP) GetById(id uuid.UUID) (*model.Role, error) {
 	return &role, nil
 }
 
-func (pgx *RolePgxIMP) Get() ([]model.Role, error) {
+func (pgx *RolePgxIMP) GetRoles() ([]model.Role, error) {
 	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM role;")
 	if err != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
@@ -60,7 +60,7 @@ func (pgx *RolePgxIMP) Get() ([]model.Role, error) {
 	return roles, nil
 }
 
-func (pgx *RolePgxIMP) Update(role *model.Role) (pgconn.CommandTag, error) {
+func (pgx *RolePgxIMP) UpdateRole(role *model.Role) (pgconn.CommandTag, error) {
 	query := "UPDATE role SET id=$1, id=$2 WHERE id=$3"
 
 	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, role.ID, role.Name,role.ID)
@@ -71,7 +71,7 @@ func (pgx *RolePgxIMP) Update(role *model.Role) (pgconn.CommandTag, error) {
 }
 
 
-func (pgx *RolePgxIMP) Delete(id uuid.UUID) error {
+func (pgx *RolePgxIMP) DeleteRole(id uuid.UUID) error {
 	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM role WHERE id=$1", id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())

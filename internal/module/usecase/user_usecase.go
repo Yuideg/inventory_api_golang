@@ -8,17 +8,17 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type CustomerUsecaseIMP struct {
-	repo module.CustomerRepository
+type UserUsecaseIMP struct {
+	repo module.UserRepository
 }
 
-func  NewCustomerUsecase(r module.CustomerRepository) module.CustomerUsecase {
-	return &CustomerUsecaseIMP{repo: r}
+func NewUserUsecase(r module.UserRepository) module.UserUsecase {
+	return &UserUsecaseIMP{repo: r}
 
 }
 
-func (s *CustomerUsecaseIMP) Get() ([]model.Customer, error) {
-	customers, errs := s.repo.Get()
+func (s *UserUsecaseIMP) GetUsers() ([]model.User, error) {
+	customers, errs := s.repo.GetUsers()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -27,8 +27,8 @@ func (s *CustomerUsecaseIMP) Get() ([]model.Customer, error) {
 	return customers, nil
 }
 
-func (s *CustomerUsecaseIMP) GetById(id uuid.UUID) (*model.Customer, error) {
-	customer, errs := s.repo.GetById(id)
+func (s *UserUsecaseIMP) GetUserByID(id uuid.UUID) (*model.User, error) {
+	customer, errs := s.repo.GetUserByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -37,8 +37,8 @@ func (s *CustomerUsecaseIMP) GetById(id uuid.UUID) (*model.Customer, error) {
 	return  customer, nil
 }
 
-func (s *CustomerUsecaseIMP) Create(customer model.Customer) (pgconn.CommandTag, error) {
-	pgcom, errs := s.repo.Create(customer)
+func (s *UserUsecaseIMP) CreateUser(customer model.User) (pgconn.CommandTag, error) {
+	pgcom, errs := s.repo.CreateUser(customer)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -46,8 +46,8 @@ func (s *CustomerUsecaseIMP) Create(customer model.Customer) (pgconn.CommandTag,
 	return pgcom, nil
 }
 
-func (s *CustomerUsecaseIMP) Update(customer *model.Customer) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(customer)
+func (s *UserUsecaseIMP) UpdateUser(customer *model.User) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateUser(customer)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -55,8 +55,8 @@ func (s *CustomerUsecaseIMP) Update(customer *model.Customer) (pgconn.CommandTag
 	return commadtag, nil
 }
 
-func (s *CustomerUsecaseIMP) Delete(id uuid.UUID) error {
-	errs := s.repo.Delete(id)
+func (s *UserUsecaseIMP) DeleteUser(id uuid.UUID) error {
+	errs := s.repo.DeleteUser(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

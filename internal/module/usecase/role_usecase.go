@@ -17,8 +17,8 @@ func NewRoleUsecaseServ(r module.RoleRepository) module.RoleServices {
 
 }
 
-func (s *RoleUsercaseIMP) Get() ([]model.Role, error) {
-	roles, errs := s.repo.Get()
+func (s *RoleUsercaseIMP) GetRoles() ([]model.Role, error) {
+	roles, errs := s.repo.GetRoles()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -27,8 +27,8 @@ func (s *RoleUsercaseIMP) Get() ([]model.Role, error) {
 	return roles, nil
 }
 
-func (s *RoleUsercaseIMP) GetById(id uuid.UUID ) (*model.Role, error) {
-	role, errs := s.repo.GetById(id)
+func (s *RoleUsercaseIMP) GetRoleByID(id uuid.UUID ) (*model.Role, error) {
+	role, errs := s.repo.GetRoleByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -37,8 +37,8 @@ func (s *RoleUsercaseIMP) GetById(id uuid.UUID ) (*model.Role, error) {
 	return  role, nil
 }
 
-func (s *RoleUsercaseIMP) Create(role model.Role) (pgconn.CommandTag, error) {
-	commands, errs := s.repo.Create(role)
+func (s *RoleUsercaseIMP) CreateRole(role model.Role) (pgconn.CommandTag, error) {
+	commands, errs := s.repo.CreateRole(role)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -46,8 +46,8 @@ func (s *RoleUsercaseIMP) Create(role model.Role) (pgconn.CommandTag, error) {
 	return commands, nil
 }
 
-func (s *RoleUsercaseIMP) Update(role *model.Role) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(role)
+func (s *RoleUsercaseIMP) UpdateRole(role *model.Role) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateRole(role)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -55,8 +55,8 @@ func (s *RoleUsercaseIMP) Update(role *model.Role) (pgconn.CommandTag, error) {
 	return commadtag, nil
 }
 
-func (s *RoleUsercaseIMP) Delete(id uuid.UUID) error {
-	errs := s.repo.Delete(id)
+func (s *RoleUsercaseIMP) DeleteRole(id uuid.UUID) error {
+	errs := s.repo.DeleteRole(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

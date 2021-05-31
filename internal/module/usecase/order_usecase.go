@@ -17,8 +17,8 @@ func  NewOrderUsecase(r module.OrderRepository) module.OrderUsecase {
 
 }
 
-func (s *OrderUsecaseIMP) Get() ([]model.Order, error) {
-	orders, errs := s.repo.Get()
+func (s *OrderUsecaseIMP) GetOrders() ([]model.Order, error) {
+	orders, errs := s.repo.GetOrders()
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -27,8 +27,8 @@ func (s *OrderUsecaseIMP) Get() ([]model.Order, error) {
 	return orders, nil
 }
 
-func (s *OrderUsecaseIMP) GetById(id uuid.UUID) (*model.Order, error) {
-	order, errs := s.repo.GetById(id)
+func (s *OrderUsecaseIMP) GetOrderByID(id uuid.UUID) (*model.Order, error) {
+	order, errs := s.repo.GetOrderByID(id)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
@@ -37,8 +37,8 @@ func (s *OrderUsecaseIMP) GetById(id uuid.UUID) (*model.Order, error) {
 	return  order, nil
 }
 
-func (s *OrderUsecaseIMP) Create(order model.Order) (pgconn.CommandTag, error) {
-	pgcom, errs := s.repo.Create(order)
+func (s *OrderUsecaseIMP) CreateOrder(order model.Order) (pgconn.CommandTag, error) {
+	pgcom, errs := s.repo.CreateOrder(order)
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(errs.Error())
 	}
@@ -46,8 +46,8 @@ func (s *OrderUsecaseIMP) Create(order model.Order) (pgconn.CommandTag, error) {
 	return pgcom, nil
 }
 
-func (s *OrderUsecaseIMP) Update(order *model.Order) (pgconn.CommandTag, error) {
-	commadtag, errs := s.repo.Update(order)
+func (s *OrderUsecaseIMP) UpdateOrder(order *model.Order) (pgconn.CommandTag, error) {
+	commadtag, errs := s.repo.UpdateOrder(order)
 
 	if errs != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(errs.Error())
@@ -55,8 +55,8 @@ func (s *OrderUsecaseIMP) Update(order *model.Order) (pgconn.CommandTag, error) 
 	return commadtag, nil
 }
 
-func (s *OrderUsecaseIMP) Delete(id uuid.UUID) error {
-	errs := s.repo.Delete(id)
+func (s *OrderUsecaseIMP) DeleteOrder(id uuid.UUID) error {
+	errs := s.repo.DeleteOrder(id)
 
 	if errs != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(errs.Error())

@@ -17,7 +17,7 @@ func init() {
 	flag.BoolVar(&testInit, "test", false, "initialize test mode without serving")
 	flag.Parse()
 
-	os.Setenv("TZ", "Asia/Jakarta")
+	os.Setenv("ET", "Africa/Ethiopia")
 }
 
 func main() {
