@@ -1,4 +1,4 @@
-                    #**Inventory APP**
+                    #Inventory APP
 this project deals with inventory application at back end architecture using 
          - gin framework 
          - pgxpool postgresql driver 
