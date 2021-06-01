@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,9 +21,7 @@ func NewSupplierRepo(pg *pgxpool.Pool, c context.Context) *SupplierIMP {
 
 }
 func (pgx *SupplierIMP) CreateSupplier(supplier model.Supplier) (pgconn.CommandTag, error) {
-	query := "INSERT INTO supplier(supplier_name,country,city,state,zipcode,street,latitude,longitude,fax,po_box,email,website,phone)" +
-		" values($1, $2, $3,$4,$5,$6,$7, $8, $9,$10,$11,$12,$13)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query,
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.SupplierInsert,
 		supplier.Name,supplier.Address.Country,supplier.Address.City,supplier.Address.State,supplier.Address.Zip,supplier.Address.Street,supplier.Address.Latitude,supplier.Address.Longitude,
 		supplier.Fax, supplier.PoBox,supplier.Email, supplier.WebSite, supplier.Phone)
 	if err != nil {
@@ -32,7 +31,7 @@ func (pgx *SupplierIMP) CreateSupplier(supplier model.Supplier) (pgconn.CommandT
 	return commands, nil
 }
 func (pgx *SupplierIMP) GetSupplierByID(id uuid.UUID) (*model.Supplier, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM supplier WHERE id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.SupplierSelectOne, id)
 	supplier := model.Supplier{}
 	err := row.Scan(&supplier.ID,&supplier.Name,&supplier.Address.Country,&supplier.Address.City,&supplier.Address.State,&supplier.Address.Zip,&supplier.Address.Street,&supplier.Address.Latitude,&supplier.Address.Longitude,
 		&supplier.Fax, &supplier.PoBox,&supplier.Email, &supplier.WebSite, &supplier.Phone,&supplier.CreatedOn,&supplier.UpdatedOn)
@@ -41,9 +40,30 @@ func (pgx *SupplierIMP) GetSupplierByID(id uuid.UUID) (*model.Supplier, error) {
 	}
 	return &supplier, nil
 }
+func (pgx *SupplierIMP) GetSupplierBySupplierID(supplierId uuid.UUID) ([]model.Supplier, error) {
+	rows, err := pgx.pgx.Query(pgx.ctx, query.SupplierSelectOne,supplierId)
+	if err != nil {
+		return nil,pkg.ErrorDatabaseGet.FetchErrors(err.Error())
+	}
+	defer rows.Close()
+
+	suppliers := []model.Supplier{}
+
+	for rows.Next() {
+		supplier := model. Supplier{}
+		err = rows.Scan(&supplier.ID,&supplier.Name,&supplier.Address.Country,&supplier.Address.City,&supplier.Address.State,&supplier.Address.Zip,&supplier.Address.Street,&supplier.Address.Latitude,&supplier.Address.Longitude,
+			&supplier.Fax, &supplier.PoBox,&supplier.Email, &supplier.WebSite, &supplier.Phone,&supplier.CreatedOn,&supplier.UpdatedOn)
+		if err != nil {
+			return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
+		}
+
+		suppliers = append(suppliers, supplier)
+	}
+	return suppliers, nil
+}
 
 func (pgx *SupplierIMP) GetSuppliers() ([]model.Supplier, error) {
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM supplier;")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.SupplierSelectAll)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
 	}
@@ -65,9 +85,7 @@ func (pgx *SupplierIMP) GetSuppliers() ([]model.Supplier, error) {
 	return suppliers, nil
 }
 func (pgx *SupplierIMP) UpdateSupplier(supplier *model.Supplier) (pgconn.CommandTag, error) {
-	query := "UPDATE supplier SET id=$1 ,supplier_name=$2,country=$3,city=$4,state=$5,zipcode=$6,street=$7,latitude=$8,longitude=$9,fax=$10," +
-		"po_box=$11,email=$12,website=$13,phone=$4 WHERE id=$15"
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, supplier.ID,supplier.ID, supplier.Name,supplier.Address.Country,supplier.Address.City,supplier.Address.State,supplier.Address.Zip,supplier.Address.Street,supplier.Address.Latitude,supplier.Address.Longitude,
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.SupplierUpdate, supplier.ID,supplier.ID, supplier.Name,supplier.Address.Country,supplier.Address.City,supplier.Address.State,supplier.Address.Zip,supplier.Address.Street,supplier.Address.Latitude,supplier.Address.Longitude,
 		supplier.Fax, supplier.PoBox,supplier.Email, supplier.WebSite, supplier.Phone,supplier.ID)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(err.Error())
@@ -76,7 +94,7 @@ func (pgx *SupplierIMP) UpdateSupplier(supplier *model.Supplier) (pgconn.Command
 }
 
 func (pgx *SupplierIMP) DeleteSupplier(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM supplier WHERE id=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx,query.SupplierDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

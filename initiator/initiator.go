@@ -38,28 +38,26 @@ func User(testInit bool) {
 	role_repo := postgres.NewRoleRepo(pool, ctx)
 	role_serv := usecase.NewRoleUsecaseServ(role_repo)
 	role_handler := rest.RoleInit(role_serv, nil)
-	//stock
-	stock_repo := postgres.NewStockRepo(pool, ctx)
-	stock_serv := usecase.NewStockUsecase(stock_repo)
-	stock_handler := rest.StockInit(stock_serv, nil)
-
-	//user
-	cust_repo := postgres.NewUserRepo(pool, ctx)
-	cust_serv := usecase.NewUserUsecase(cust_repo)
-	cust_handler := rest.UserInit(cust_serv, role_serv,nil)
 
 	//supplier
 	supplier_repo := postgres.NewSupplierRepo(pool, ctx)
 	supplier_serv := usecase.NewSupplierUsecase(supplier_repo)
 	supplier_handler := rest.SupplierInit(supplier_serv, nil)
+
+	//stock
+	stock_repo := postgres.NewStockRepo(pool, ctx)
+	stock_serv := usecase.NewStockUsecase(stock_repo)
+	stock_handler := rest.StockInit(stock_serv,supplier_serv,nil)
+
+	//user
+	cust_repo := postgres.NewUserRepo(pool, ctx)
+	cust_serv := usecase.NewUserUsecase(cust_repo)
+	cust_handler := rest.UserInit(cust_serv, role_serv,order_serv,nil)
     server_router:=routing.AllRouting(cust_handler,order_handler,product_handler,role_handler,stock_handler,supplier_handler)
-
-
-	server := routers.NewRouting("localhost", "9780", server_router)
+	server := routers.NewRouting("localhost", "9090", server_router)
 	if testInit {
 		fmt.Println("Initialize test mode Finished!")
 		os.Exit(0)
 	}
 	server.Serve()
-
 }

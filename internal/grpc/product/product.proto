@@ -14,17 +14,18 @@ message Product {
     string id = 1;
     string barcode=2;
     string product_name=3;
-    string brand =4;
-    string image=5;
-    string cost=6;
-    string price=7;
-    string unit=8;
-    string tax=9;
-    string  mfg_date=10;
-    string stock_id=11 ;
-    string expired_at=12;
-    string created_on=13;
-    string updated_on=14;
+    string stock_id=4 ;
+    string brand =5;
+    string image=6;
+    float cost=7;
+    float price=8;
+    string unit=9;
+    float tax=10;
+    float discount=11;
+    string  mfg_date=12;
+    string expired_at=13;
+    string created_on=14;
+    string updated_on=15;
 
 }
 message CreateProductRequest {
@@ -37,7 +38,6 @@ message CreateProductResponse {
 message ProductByIDRequest {
     string id = 1;
 }
-
 message ProductByIDResponse {
     Product product = 1;
 }

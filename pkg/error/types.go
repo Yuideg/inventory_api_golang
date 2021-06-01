@@ -37,7 +37,6 @@ const (
 	ErrorTokenExpired          ErrorType = 461
 	ErrorTokenInvalid          ErrorType = 462
 	ErrorTokenMalformed        ErrorType = 463
-
 	// System errors
 	ErrorMarshal ErrorType = iota + 1000
 	ErrorUnmarshal
@@ -67,32 +66,6 @@ func (errType ErrorType) FetchErrors(msg string) error {
 		wrappedError: errors.New(msg),
 	}
 }
-
-// Newf creates a new CustomError with formatted message
-func (errType ErrorType) Newf(msg string, args ...interface{}) error {
-	err := fmt.Errorf(msg, args...)
-
-	return CustomError{
-		errType:      errType,
-		wrappedError: err,
-	}
-}
-
-// Wrap creates a new wrapped error
-func (errType ErrorType) Wrap(err error, msg string) error {
-	return errType.Wrapf(err, msg)
-}
-
-// Wrapf creates a new wrapped error with formatted message
-func (errType ErrorType) Wrapf(err error, msg string, args ...interface{}) error {
-	newErr := errType.Wrapf(err, msg, args...)
-
-	return CustomError{
-		errType:      errType,
-		wrappedError: newErr,
-	}
-}
-
 // Define some template errors
 var (
 	ErrMethodNotAllow = ErrorMethodNotAllow.New()

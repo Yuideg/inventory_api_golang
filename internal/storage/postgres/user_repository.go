@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,9 +21,7 @@ func NewUserRepo(pg *pgxpool.Pool, c context.Context) *UserMP {
 
 }
 func (pgx *UserMP) CreateUser(user model.User) (pgconn.CommandTag, error) {
-	query := "INSERT INTO user_tb(username,password,first_name,last_name,gender,email,country,city,state,zipcode,street,latitude,longitude,phone,role_id)" +
-		" values($1, $2, $3,$4,$5,$6,$7, $8, $9,$10,$11,$12,$13,$14,$15)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query,
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.UserInsert,
 		 user.Username, user.Password, user.FirstName,
 		user.LastName, user.Gender, user.Email, user.Address.Country, user.Address.City, user.Address.State, user.Address.Zip,
 		user.Address.Street, user.Address.Latitude, user.Address.Longitude, user.Phone, user.RoleID)
@@ -34,7 +33,7 @@ func (pgx *UserMP) CreateUser(user model.User) (pgconn.CommandTag, error) {
 }
 
 func (pgx *UserMP) GetUserByID(id uuid.UUID) (*model.User, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM user_tb WHERE id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.UserSelectOne, id)
 	user := model.User{}
 	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.FirstName,
 		&user.LastName,&user.Gender,&user.Email,&user.Address.Country,&user.Address.City,&user.Address.State,&user.Address.Zip,
@@ -46,8 +45,8 @@ func (pgx *UserMP) GetUserByID(id uuid.UUID) (*model.User, error) {
 }
 
 func (pgx *UserMP) GetUsers() ([]model.User, error) {
-      fmt.Println("cust repo get started")
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM user_tb;")
+      fmt.Println("user repo get started")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.UserSelectAll)
 	if err != nil {
 		fmt.Println("line 53",err)
 		return nil,pkg.ErrorDatabaseGet.FetchErrors(err.Error())
@@ -71,10 +70,8 @@ func (pgx *UserMP) GetUsers() ([]model.User, error) {
 	return users, nil
 }
 func (pgx *UserMP) UpdateUser(user *model.User) (pgconn.CommandTag, error) {
-	query := "UPDATE user_tb SET id=$1, username=$2,password=$3,first_name=$4,last_name=$5," +
-		"gender=$6,email=$7,country=$8,city=$9,state=$10,zipcode=$11,street=$12,latitude=$13,longitude=$14,phone=$15,role_id=$16 WHERE id=$17"
 
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, user.ID, user.Username, user.Password, user.FirstName,
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.UserUpdate, user.ID, user.Username, user.Password, user.FirstName,
 		user.LastName, user.Gender, user.Email, user.Address.Country, user.Address.City, user.Address.State, user.Address.Zip, user.Address.Street,
 		user.Address.Latitude, user.Address.Longitude, user.Phone, user.RoleID, user.ID)
 	if err != nil {
@@ -84,7 +81,7 @@ func (pgx *UserMP) UpdateUser(user *model.User) (pgconn.CommandTag, error) {
 }
 
 func (pgx *UserMP) DeleteUser(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM user_tb WHERE id=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx, query.UserDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

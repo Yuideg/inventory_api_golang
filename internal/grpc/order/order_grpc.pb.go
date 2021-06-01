@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type OrderServiceClient interface {
 	CreateOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
 	OrderByID(ctx context.Context, in *OrderByIDRequest, opts ...grpc.CallOption) (*OrderByIDResponse, error)
+	GetOrderByUserID(ctx context.Context, in *OrderByUSerIDRequest, opts ...grpc.CallOption) (*OrderByUserIDResponse, error)
 	OrderList(ctx context.Context, in *OrderListRequest, opts ...grpc.CallOption) (*OrderListResponse, error)
 	UpdateOrder(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*UpdateOrderResponse, error)
 	DeleteOrder(ctx context.Context, in *DeleteOrderRequest, opts ...grpc.CallOption) (*DeleteOrderResponse, error)
@@ -45,6 +46,15 @@ func (c *orderServiceClient) CreateOrder(ctx context.Context, in *CreateOrderReq
 func (c *orderServiceClient) OrderByID(ctx context.Context, in *OrderByIDRequest, opts ...grpc.CallOption) (*OrderByIDResponse, error) {
 	out := new(OrderByIDResponse)
 	err := c.cc.Invoke(ctx, "/order.OrderService/OrderByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) GetOrderByUserID(ctx context.Context, in *OrderByUSerIDRequest, opts ...grpc.CallOption) (*OrderByUserIDResponse, error) {
+	out := new(OrderByUserIDResponse)
+	err := c.cc.Invoke(ctx, "/order.OrderService/GetOrderByUserID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +94,7 @@ func (c *orderServiceClient) DeleteOrder(ctx context.Context, in *DeleteOrderReq
 type OrderServiceServer interface {
 	CreateOrder(context.Context, *CreateOrderRequest) (*CreateOrderResponse, error)
 	OrderByID(context.Context, *OrderByIDRequest) (*OrderByIDResponse, error)
+	GetOrderByUserID(context.Context, *OrderByUSerIDRequest) (*OrderByUserIDResponse, error)
 	OrderList(context.Context, *OrderListRequest) (*OrderListResponse, error)
 	UpdateOrder(context.Context, *UpdateOrderRequest) (*UpdateOrderResponse, error)
 	DeleteOrder(context.Context, *DeleteOrderRequest) (*DeleteOrderResponse, error)
@@ -99,6 +110,9 @@ func (UnimplementedOrderServiceServer) CreateOrder(context.Context, *CreateOrder
 }
 func (UnimplementedOrderServiceServer) OrderByID(context.Context, *OrderByIDRequest) (*OrderByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderByID not implemented")
+}
+func (UnimplementedOrderServiceServer) GetOrderByUserID(context.Context, *OrderByUSerIDRequest) (*OrderByUserIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOrderByUserID not implemented")
 }
 func (UnimplementedOrderServiceServer) OrderList(context.Context, *OrderListRequest) (*OrderListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderList not implemented")
@@ -154,6 +168,24 @@ func _OrderService_OrderByID_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).OrderByID(ctx, req.(*OrderByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_GetOrderByUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrderByUSerIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).GetOrderByUserID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/order.OrderService/GetOrderByUserID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).GetOrderByUserID(ctx, req.(*OrderByUSerIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,6 +258,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OrderByID",
 			Handler:    _OrderService_OrderByID_Handler,
+		},
+		{
+			MethodName: "GetOrderByUserID",
+			Handler:    _OrderService_GetOrderByUserID_Handler,
 		},
 		{
 			MethodName: "OrderList",

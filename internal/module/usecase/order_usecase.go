@@ -36,6 +36,15 @@ func (s *OrderUsecaseIMP) GetOrderByID(id uuid.UUID) (*model.Order, error) {
 
 	return  order, nil
 }
+func (s *OrderUsecaseIMP) GetOrderByUserID(user_id uuid.UUID) ([]model.Order, error) {
+	orders, errs := s.repo.GetOrderByUserID(user_id)
+
+	if errs != nil {
+		return nil, pkg.ErrorDatabaseGet.FetchErrors(errs.Error())
+	}
+
+	return orders, nil
+}
 
 func (s *OrderUsecaseIMP) CreateOrder(order model.Order) (pgconn.CommandTag, error) {
 	pgcom, errs := s.repo.CreateOrder(order)

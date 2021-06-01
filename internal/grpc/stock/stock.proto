@@ -13,12 +13,19 @@ service StockService{
 
 message Stock {
     string id = 1;
-    string products_code =2;
-    string products_name=3;
-    string quantity =4;
+    string items_code =2;
+    string items_name=3;
+    int32  no_items=4;
     string supplier_id=5;
-    string created_on=9;
-    string updated_on=10;
+    string country =6;
+    string city  =7;
+    string state =8;
+    int32 zipcode =9;
+    string street =10;
+    float latitude =11;
+    float longitude=12;
+    string created_on=13;
+    string updated_on=14;
 
 }
 message CreateStockRequest {

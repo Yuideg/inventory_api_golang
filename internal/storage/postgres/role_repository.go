@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,8 +21,7 @@ func NewRoleRepo(pg *pgxpool.Pool, c context.Context) *RolePgxIMP {
 
 }
 func (pgx *RolePgxIMP) CreateRole(role model.Role) (pgconn.CommandTag, error) {
-	query := "INSERT INTO role (id,name) values($1, $2)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query, role.ID, role.Name)
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.RoleInsert, role.ID, role.Name)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(err.Error())
 	}
@@ -29,7 +29,7 @@ func (pgx *RolePgxIMP) CreateRole(role model.Role) (pgconn.CommandTag, error) {
 	return commands, nil
 }
 func (pgx *RolePgxIMP) GetRoleByID(id uuid.UUID) (*model.Role, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM role WHERE id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.RoleSelectOne, id)
 	fmt.Println("id =", id)
 	role := model.Role{}
 	err := row.Scan(&role.ID, &role.Name)
@@ -41,7 +41,7 @@ func (pgx *RolePgxIMP) GetRoleByID(id uuid.UUID) (*model.Role, error) {
 }
 
 func (pgx *RolePgxIMP) GetRoles() ([]model.Role, error) {
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM role;")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.RoleSelectAll)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
 	}
@@ -61,9 +61,7 @@ func (pgx *RolePgxIMP) GetRoles() ([]model.Role, error) {
 }
 
 func (pgx *RolePgxIMP) UpdateRole(role *model.Role) (pgconn.CommandTag, error) {
-	query := "UPDATE role SET id=$1, id=$2 WHERE id=$3"
-
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, role.ID, role.Name,role.ID)
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.RoleUpdate, role.ID, role.Name,role.ID)
 	if err != nil {
 		return nil,pkg.ErrorDatabaseUpdate.FetchErrors(err.Error())
 	}
@@ -72,7 +70,7 @@ func (pgx *RolePgxIMP) UpdateRole(role *model.Role) (pgconn.CommandTag, error) {
 
 
 func (pgx *RolePgxIMP) DeleteRole(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM role WHERE id=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx, query.RoleDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

@@ -18,6 +18,7 @@ type RoleRepository interface {
 type OrderRepository interface {
 	GetOrders() ([]model.Order, error)
 	GetOrderByID(id uuid.UUID) (*model.Order, error)
+	GetOrderByUserID(user_id uuid.UUID) ([]model.Order, error)
 	CreateOrder(info model.Order) (pgconn.CommandTag, error)
 	UpdateOrder(info *model.Order) (pgconn.CommandTag, error)
 	DeleteOrder(id uuid.UUID) error
@@ -42,6 +43,7 @@ type ProductRepository interface {
 type SupplierRepository interface {
 	GetSuppliers() ([]model.Supplier, error)
 	GetSupplierByID(id uuid.UUID) (*model.Supplier, error)
+	GetSupplierBySupplierID(supplierId uuid.UUID) ([]model.Supplier, error)
 	CreateSupplier(info model.Supplier) (pgconn.CommandTag, error)
 	UpdateSupplier(info *model.Supplier) (pgconn.CommandTag, error)
 	DeleteSupplier(id uuid.UUID) error
@@ -72,6 +74,7 @@ type RoleServices interface {
 type OrderUsecase interface {
 	GetOrders() ([]model.Order, error)
 	GetOrderByID(id uuid.UUID) (*model.Order, error)
+	GetOrderByUserID(user_id uuid.UUID) ([]model.Order, error)
 	CreateOrder(info model.Order) (pgconn.CommandTag, error)
 	UpdateOrder(info *model.Order) (pgconn.CommandTag, error)
 	DeleteOrder(id uuid.UUID) error
@@ -96,6 +99,7 @@ type ProductUsecase interface {
 type SupplierUsecase interface {
 	GetSuppliers() ([]model.Supplier, error)
 	GetSupplierByID(id uuid.UUID) (*model.Supplier, error)
+	GetSupplierBySupplierID(supplierId uuid.UUID) ([]model.Supplier, error)
 	CreateSupplier(info model.Supplier) (pgconn.CommandTag, error)
 	UpdateSupplier(info *model.Supplier) (pgconn.CommandTag, error)
 	DeleteSupplier(id uuid.UUID) error

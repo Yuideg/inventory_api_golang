@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,9 +21,7 @@ func NewProductRepo(pg *pgxpool.Pool, c context.Context) *ProductIMP {
 
 }
 func (pgx *ProductIMP) CreateProduct(product model.Product) (pgconn.CommandTag, error) {
-	query := "INSERT INTO product(barcode, product_name,stock_id,brand,image,cost,price,unit,tax_rate,discount,mfg_date,expired_on)" +
-		" values($1, $2, $3,$4,$5,$6,$7, $8, $9,$10,$11,$12,$13)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query,product.ID,product.Barcode,product.ProductName,
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.ProductInsert,product.ID,product.Barcode,product.ProductName,
 		product.StockId,product.Brand, product.Image,product.Cost, product.Price,product.Unit,
 		product.Tax,product.Discount,product.MfgDate,product.ExpiredOn)
 	if err != nil {
@@ -32,7 +31,7 @@ func (pgx *ProductIMP) CreateProduct(product model.Product) (pgconn.CommandTag, 
 	return commands, nil
 }
 func (pgx *ProductIMP) GetProductsByID(id uuid.UUID) (*model.Product, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM product WHERE id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.ProductSelectOne, id)
 	product := model.Product{}
 	err := row.Scan(&product.ID,&product.Barcode,&product.ProductName,
 		&product.StockId,&product.Brand, &product.Image,&product.Cost, &product.Price,&product.Unit,
@@ -44,7 +43,7 @@ func (pgx *ProductIMP) GetProductsByID(id uuid.UUID) (*model.Product, error) {
 }
 
 func (pgx *ProductIMP) GetProducts() ([]model.Product, error) {
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM product;")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.ProductSelectAll)
 	if err != nil {
 		return nil,pkg.ErrorDatabaseGet.FetchErrors(err.Error())
 	}
@@ -67,10 +66,7 @@ func (pgx *ProductIMP) GetProducts() ([]model.Product, error) {
 	return products, nil
 }
 func (pgx *ProductIMP) UpdateProduct(product *model.Product) (pgconn.CommandTag, error) {
-	query := "UPDATE product SET id=$1,barcode=$2, product_name=$3,stock_id=$4,brand=$5,image=$6,cost=$7,price=$8,unit=$9,tax_rate=$10," +
-		"mfg_date=$11,expired_on=$12 WHERE barcode=$13"
-
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, product.ID,product.Barcode,product.ProductName,
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.ProductUpdate, product.ID,product.Barcode,product.ProductName,
 		product.StockId,product.Brand, product.Image,product.Cost, product.Price,product.Unit,
 		product.Tax,product.Discount,product.MfgDate,product.ExpiredOn,product.Barcode)
 	if err != nil {
@@ -80,7 +76,7 @@ func (pgx *ProductIMP) UpdateProduct(product *model.Product) (pgconn.CommandTag,
 }
 
 func (pgx *ProductIMP) DeleteProduct(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM product WHERE barcode=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx, query.ProductDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

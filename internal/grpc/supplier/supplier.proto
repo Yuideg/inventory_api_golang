@@ -5,24 +5,28 @@ option go_package = "./;supplier";
 service SupplierService{
     rpc CreateSupplier(CreateSupplierRequest) returns (CreateSupplierResponse);
     rpc SupplierByID(SupplierByIDRequest) returns (SupplierByIDResponse);
+    rpc GetSupplierBySupplierID(SupplierBySupplierIDRequest) returns (SupplierBySupplierIDResponse);
     rpc SupplierList(SupplierListRequest) returns (SupplierListResponse);
     rpc UpdateSupplier(UpdateSupplierRequest) returns (UpdateSupplierResponse);
     rpc DeleteSupplier(DeleteSupplierRequest) returns (DeleteSupplierResponse);
 }
 message Supplier {
     string id = 1;
-    string country =2;
-    string city  =3;
-    string state =4;
-    string zipcode =5;
-    string street =6;
-    string latitude =7;
-    string longitude=8;
-    string email=9;
-    string website=10;
-    string phone=11;
-    string created_on=12;
-    string updated_on=13;
+    string supplier_name=2;
+    string country =3;
+    string city  =4;
+    string state =5;
+    int32 zipcode =6;
+    string street =7;
+    float latitude =8;
+    float longitude=9;
+    string  fax=10;
+    string pobox=11;
+    string email=12;
+    string website=13;
+    string phone=14;
+    string created_on=15;
+    string updated_on=16;
 
 }
 message CreateSupplierRequest {
@@ -35,8 +39,13 @@ message CreateSupplierResponse {
 message SupplierByIDRequest {
     string id = 1;
 }
-
 message SupplierByIDResponse {
+    Supplier supplier= 1;
+}
+message SupplierBySupplierIDRequest {
+    string id = 1;
+}
+message SupplierBySupplierIDResponse {
     Supplier supplier= 1;
 }
 message SupplierListRequest {}

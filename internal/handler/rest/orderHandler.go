@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
 	"github.com/Yideg/inventory_app/internal/module"
+	"github.com/Yideg/inventory_app/pkg/comparision"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
 	"net/http"
@@ -28,26 +29,40 @@ func OrderInit(userCase module.OrderUsecase, cs []byte) OrderHandler {
 }
 
 func (ah *orderHandler) Orders(c *gin.Context) {
-	orders, _ := ah.Serv.Get()
-	fmt.Println("data", orders)
-	c.JSON(http.StatusOK, gin.H{"orders": orders})
+	var newOrder[]model.Order
+	orders, _ := ah.Serv.GetOrders()
+	for _,v:= range orders{
+		ExpirationTime:=v.ExpiredOn
+		if comparision.CheckExpirationTime(ExpirationTime) {
+			newOrder=append(newOrder,v)
+		}
+		continue
+	}
+	if len(newOrder)==0 {
+		c.JSON(http.StatusOK, gin.H{"orders": "No Active Order Found!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"orders": newOrder})
 }
 func (ah *orderHandler) OrderById(c *gin.Context) {
-	fmt.Println("start handler")
 	param := c.Param("id")
 	id,err:=uuid.FromString(param)
 	if err!=nil{
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input!"})
 		return
 	}
-	order, err := ah.Serv.GetById(id)
+	order, err := ah.Serv.GetOrderByID(id)
 	if err != nil {
 		fmt.Println("line 54", err)
-		fmt.Println("data=", order)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"orders": order})
+	ExpirationTime:=order.ExpiredOn
+	if comparision.CheckExpirationTime(ExpirationTime) {
+		c.JSON(http.StatusOK, gin.H{"orders": order})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"orders": "No Active Order Found. Order May be Expired!"})
 
 }
 func (ah *orderHandler) UpdateOrder(c *gin.Context) {
@@ -64,7 +79,7 @@ func (ah *orderHandler) UpdateOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": er.Error()})
 		return
 	}
-	_, err = ah.Serv.Update(order)
+	_, err = ah.Serv.UpdateOrder(order)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
@@ -74,13 +89,13 @@ func (ah *orderHandler) UpdateOrder(c *gin.Context) {
 func (ah *orderHandler) CreateOrder(c *gin.Context) {
 	var order model.Order
 	c.BindJSON(&order)
-	_, err := ah.Serv.Create(order)
+	_, err := ah.Serv.CreateOrder(order)
 	if err != nil {
 		fmt.Println("line 79",err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create orders failed! !"})
 		return
 	}
-	ord, err := ah.Serv.Get()
+	ord, err := ah.Serv.GetOrders()
 	if err != nil {
 		fmt.Println("line 85",err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create order failed! !", "statusCode": http.StatusInternalServerError})
@@ -94,7 +109,7 @@ func (ah *orderHandler) DeleteOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input!"})
 		return
 	}
-	err = ah.Serv.Delete(id)
+	err = ah.Serv.DeleteOrder(id)
 	fmt.Println("line 141", err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "statusCode": http.StatusBadRequest})

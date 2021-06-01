@@ -15,7 +15,6 @@ type Router struct {
 	Authenticated  func(handle *gin.Context)
 	Authorized  func(handle *gin.Context)
 	Handler     func(handle *gin.Context)
-
 }
 type routing struct {
 	host    string

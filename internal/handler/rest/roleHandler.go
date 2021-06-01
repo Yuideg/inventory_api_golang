@@ -28,7 +28,7 @@ func RoleInit(userCase module.RoleServices, cs []byte) RoleHandler {
 }
 
 func (ah *roleHandler) Roles(c *gin.Context) {
-	roles, _ := ah.Serv.Get()
+	roles, _ := ah.Serv.GetRoles()
 	fmt.Println("data", roles)
 	c.JSON(http.StatusOK, gin.H{"roles": roles})
 }
@@ -39,7 +39,7 @@ func (ah *roleHandler) RoleById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
 		return
 	}
-	role, err := ah.Serv.GetById(id)
+	role, err := ah.Serv.GetRoleByID(id)
 	if err != nil {
 		fmt.Println("line 54", err)
 		fmt.Println("data=", role)
@@ -63,7 +63,7 @@ func (ah *roleHandler) UpdateRole(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": er.Error()})
 		return
 	}
-	_, err = ah.Serv.Update(role)
+	_, err = ah.Serv.UpdateRole(role)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
@@ -73,12 +73,12 @@ func (ah *roleHandler) UpdateRole(c *gin.Context) {
 func (ah *roleHandler) CreateRole(c *gin.Context) {
 	var role model.Role
 	c.BindJSON(&role)
-	_, err := ah.Serv.Create(role)
+	_, err := ah.Serv.CreateRole(role)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create role failed! !"})
 		return
 	}
-	rol, err := ah.Serv.Get()
+	rol, err := ah.Serv.GetRoles()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create role failed! !", "statusCode": http.StatusInternalServerError})
 	}
@@ -91,7 +91,7 @@ func (ah *roleHandler) DeleteRole(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failes!"})
 		return
 	}
-	err = ah.Serv.Delete(id)
+	err = ah.Serv.DeleteRole(id)
 	fmt.Println("line 141", err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "statusCode": http.StatusBadRequest})

@@ -32,12 +32,3 @@ var ErrorCodeMap = map[ErrorType]string{
 	ErrorTokenInvalid:          "ERROR_TOKEN_INVALID",
 	ErrorTokenMalformed:        "ERROR_TOKEN_MALFORMED",
 }
-
-// GetCode get error code
-func GetCode(status int) string {
-	msg, ok := ErrorCodeMap[ErrorType(status)]
-	if ok {
-		return msg
-	}
-	return ErrorCodeMap[Error]
-}

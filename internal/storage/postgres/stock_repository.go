@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -20,9 +21,7 @@ func NewStockRepo(pg *pgxpool.Pool, c context.Context) *StockIMP {
 
 }
 func (pgx *StockIMP) CreateStock(stock model.Stock) (pgconn.CommandTag, error) {
-	query := "INSERT INTO stock(products_common_code,products_common_name, number_of_products,supplier_id,country,city,state,zipcode,street,latitude,longitude)" +
-		" values($1, $2, $3,$4,$5,$6,$7,$8,$9,$10,$11)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query,
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.StockInsert,
 		stock.ID, stock.ProductsCode,stock.ProductsName,stock.No_products,stock.SupplierID,
 		stock.Address.Country,stock.Address.City,stock.Address.State,stock.Address.Street,stock.Address.Latitude,stock.Address.Longitude)
 	if err != nil {
@@ -32,7 +31,7 @@ func (pgx *StockIMP) CreateStock(stock model.Stock) (pgconn.CommandTag, error) {
 	return commands, nil
 }
 func (pgx *StockIMP) GetStockByID(id uuid.UUID) (*model.Stock, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM stock WHERE id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.StockSelectOne, id)
 	stock := model.Stock{}
 	err := row.Scan(&stock.ID, &stock.ProductsCode,&stock.ProductsName,&stock.No_products,&stock.SupplierID,
 		&stock.Address.Country,&stock.Address.City,&stock.Address.State,&stock.Address.Zip,&stock.Address.Street,&stock.Address.Latitude,&stock.Address.Longitude,&stock.CreatedOn,&stock.UpdatedOn)
@@ -43,7 +42,7 @@ func (pgx *StockIMP) GetStockByID(id uuid.UUID) (*model.Stock, error) {
 }
 
 func (pgx *StockIMP) GetStocks() ([]model.Stock, error) {
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM stock;")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.StockSelectAll)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
 	}
@@ -65,9 +64,7 @@ func (pgx *StockIMP) GetStocks() ([]model.Stock, error) {
 	return stocks, nil
 }
 func (pgx *StockIMP) UpdateStock(stock *model.Stock) (pgconn.CommandTag, error) {
-	query := "UPDATE stock SET id=$1 ,products_code=$2,products_name=$3, number_of_products=$4,supplier_id=$5,country=$6,city=$7,state=$8," +
-		"zipcode=$9,street=$10,latitude=$11,longitude=$12 WHERE id=$13"
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, stock.ID, stock.ProductsCode,stock.ProductsName,stock.No_products,stock.SupplierID,
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.StockUpdate, stock.ID, stock.ProductsCode,stock.ProductsName,stock.No_products,stock.SupplierID,
 		stock.Address.Country,stock.Address.City,stock.Address.State,stock.Address.Street,stock.Address.Latitude,stock.Address.Longitude,stock.ID)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(err.Error())
@@ -76,7 +73,7 @@ func (pgx *StockIMP) UpdateStock(stock *model.Stock) (pgconn.CommandTag, error) 
 }
 
 func (pgx *StockIMP) DeleteStock(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM stock WHERE id=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx, query.StockDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

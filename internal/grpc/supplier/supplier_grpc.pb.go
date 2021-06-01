@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type SupplierServiceClient interface {
 	CreateSupplier(ctx context.Context, in *CreateSupplierRequest, opts ...grpc.CallOption) (*CreateSupplierResponse, error)
 	SupplierByID(ctx context.Context, in *SupplierByIDRequest, opts ...grpc.CallOption) (*SupplierByIDResponse, error)
+	GetSupplierBySupplierID(ctx context.Context, in *SupplierBySupplierIDRequest, opts ...grpc.CallOption) (*SupplierBySupplierIDResponse, error)
 	SupplierList(ctx context.Context, in *SupplierListRequest, opts ...grpc.CallOption) (*SupplierListResponse, error)
 	UpdateSupplier(ctx context.Context, in *UpdateSupplierRequest, opts ...grpc.CallOption) (*UpdateSupplierResponse, error)
 	DeleteSupplier(ctx context.Context, in *DeleteSupplierRequest, opts ...grpc.CallOption) (*DeleteSupplierResponse, error)
@@ -45,6 +46,15 @@ func (c *supplierServiceClient) CreateSupplier(ctx context.Context, in *CreateSu
 func (c *supplierServiceClient) SupplierByID(ctx context.Context, in *SupplierByIDRequest, opts ...grpc.CallOption) (*SupplierByIDResponse, error) {
 	out := new(SupplierByIDResponse)
 	err := c.cc.Invoke(ctx, "/supplier.SupplierService/SupplierByID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *supplierServiceClient) GetSupplierBySupplierID(ctx context.Context, in *SupplierBySupplierIDRequest, opts ...grpc.CallOption) (*SupplierBySupplierIDResponse, error) {
+	out := new(SupplierBySupplierIDResponse)
+	err := c.cc.Invoke(ctx, "/supplier.SupplierService/GetSupplierBySupplierID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +94,7 @@ func (c *supplierServiceClient) DeleteSupplier(ctx context.Context, in *DeleteSu
 type SupplierServiceServer interface {
 	CreateSupplier(context.Context, *CreateSupplierRequest) (*CreateSupplierResponse, error)
 	SupplierByID(context.Context, *SupplierByIDRequest) (*SupplierByIDResponse, error)
+	GetSupplierBySupplierID(context.Context, *SupplierBySupplierIDRequest) (*SupplierBySupplierIDResponse, error)
 	SupplierList(context.Context, *SupplierListRequest) (*SupplierListResponse, error)
 	UpdateSupplier(context.Context, *UpdateSupplierRequest) (*UpdateSupplierResponse, error)
 	DeleteSupplier(context.Context, *DeleteSupplierRequest) (*DeleteSupplierResponse, error)
@@ -99,6 +110,9 @@ func (UnimplementedSupplierServiceServer) CreateSupplier(context.Context, *Creat
 }
 func (UnimplementedSupplierServiceServer) SupplierByID(context.Context, *SupplierByIDRequest) (*SupplierByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SupplierByID not implemented")
+}
+func (UnimplementedSupplierServiceServer) GetSupplierBySupplierID(context.Context, *SupplierBySupplierIDRequest) (*SupplierBySupplierIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSupplierBySupplierID not implemented")
 }
 func (UnimplementedSupplierServiceServer) SupplierList(context.Context, *SupplierListRequest) (*SupplierListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SupplierList not implemented")
@@ -154,6 +168,24 @@ func _SupplierService_SupplierByID_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SupplierServiceServer).SupplierByID(ctx, req.(*SupplierByIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SupplierService_GetSupplierBySupplierID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SupplierBySupplierIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SupplierServiceServer).GetSupplierBySupplierID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/supplier.SupplierService/GetSupplierBySupplierID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SupplierServiceServer).GetSupplierBySupplierID(ctx, req.(*SupplierBySupplierIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -226,6 +258,10 @@ var SupplierService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SupplierByID",
 			Handler:    _SupplierService_SupplierByID_Handler,
+		},
+		{
+			MethodName: "GetSupplierBySupplierID",
+			Handler:    _SupplierService_GetSupplierBySupplierID_Handler,
 		},
 		{
 			MethodName: "SupplierList",

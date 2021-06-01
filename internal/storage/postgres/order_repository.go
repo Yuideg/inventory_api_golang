@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"github.com/Yideg/inventory_app/internal/constant/model"
+	"github.com/Yideg/inventory_app/internal/constant/query"
 	pkg "github.com/Yideg/inventory_app/pkg/error"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -19,9 +20,8 @@ func NewOrderRepo(pg *pgxpool.Pool, c context.Context) *OrderMP {
 
 }
 func (pgx *OrderMP) CreateOrder(order model.Order) (pgconn.CommandTag, error) {
-	query := "INSERT INTO orders(quantity,unit,confirm_by,user_id,product_id,status,expired_on)" +
-		" values($1, $2, $3,$4,$5,$6,$7)"
-	commands, err := pgx.pgx.Exec(pgx.ctx, query,order.Quantity, order.Unit,
+
+	commands, err := pgx.pgx.Exec(pgx.ctx, query.OrderInsert,order.Quantity, order.Unit,
 		order.CertifiedBy,order.Customer_ID,order.Product_ID,order.Status,order.ExpiredOn)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseCreate.FetchErrors(err.Error())
@@ -30,7 +30,7 @@ func (pgx *OrderMP) CreateOrder(order model.Order) (pgconn.CommandTag, error) {
 	return commands, nil
 }
 func (pgx *OrderMP) GetOrderByID(id uuid.UUID) (*model.Order, error) {
-	row := pgx.pgx.QueryRow(pgx.ctx, "SELECT * FROM orders WHERE  id = $1", id)
+	row := pgx.pgx.QueryRow(pgx.ctx, query.OrderSelectOneBy_ID, id)
 	order := model.Order{}
 	err := row.Scan(&order.ID, &order.Quantity, &order.Unit,
 		&order.CertifiedBy,&order.Customer_ID,&order.Product_ID,&order.Status,&order.ExpiredOn,&order.CreatedOn,&order.UpdatedOn)
@@ -39,9 +39,29 @@ func (pgx *OrderMP) GetOrderByID(id uuid.UUID) (*model.Order, error) {
 	}
 	return &order, nil
 }
+func (pgx *OrderMP) GetOrderByUserID(user_id uuid.UUID) ([]model.Order, error) {
+	rows, err := pgx.pgx.Query(pgx.ctx, query.OrderSelectBy_User_ID,user_id)
+	if err != nil {
+		return nil,pkg.ErrorDatabaseGet.FetchErrors(err.Error())
+	}
+	defer rows.Close()
 
+	orders := []model.Order{}
+
+	for rows.Next() {
+		order := model. Order{}
+		err = rows.Scan(&order.ID, &order.Quantity, &order.Unit,
+			&order.CertifiedBy,&order.Customer_ID,&order.Product_ID,&order.Status,&order.ExpiredOn,&order.CreatedOn,&order.UpdatedOn)
+		if err != nil {
+			return nil, pkg.ErrorDatabaseGet.FetchErrors(err.Error())
+		}
+
+		orders = append(orders, order)
+	}
+	return orders, nil
+}
 func (pgx *OrderMP) GetOrders() ([]model.Order, error) {
-	rows, err := pgx.pgx.Query(pgx.ctx, "SELECT * FROM orders;")
+	rows, err := pgx.pgx.Query(pgx.ctx, query.OrderSelectAll)
 	if err != nil {
 		return nil,pkg.ErrorDatabaseGet.FetchErrors(err.Error())
 	}
@@ -62,9 +82,7 @@ func (pgx *OrderMP) GetOrders() ([]model.Order, error) {
 	return orders, nil
 }
 func (pgx *OrderMP) UpdateOrder(order *model.Order) (pgconn.CommandTag, error) {
-	query := "UPDATE orders SET id=$1, quantity=$2,unit=$3,confirm_by=$4,customer_id=$5,product_id=$6,status=$7,expired_on=$8 WHERE id=$9"
-
-	tag_command, err := pgx.pgx.Exec(pgx.ctx, query, order.ID, order.Quantity, order.Unit,
+	tag_command, err := pgx.pgx.Exec(pgx.ctx, query.OrderUpdate, order.ID, order.Quantity, order.Unit,
 		order.CertifiedBy,order.Customer_ID,order.Product_ID,order.Status,order.ExpiredOn,order.ID)
 	if err != nil {
 		return nil, pkg.ErrorDatabaseUpdate.FetchErrors(err.Error())
@@ -73,7 +91,7 @@ func (pgx *OrderMP) UpdateOrder(order *model.Order) (pgconn.CommandTag, error) {
 }
 
 func (pgx *OrderMP) DeleteOrder(id uuid.UUID) error {
-	_, err := pgx.pgx.Exec(pgx.ctx, "DELETE FROM orders WHERE id=$1", id)
+	_, err := pgx.pgx.Exec(pgx.ctx, query.OrderDelete, id)
 	if err != nil {
 		return pkg.ErrorDatabaseDelete.FetchErrors(err.Error())
 	}

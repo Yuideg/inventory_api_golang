@@ -18,27 +18,38 @@ type StockHandler interface {
 	DeleteStock(c *gin.Context)
 }
 type stockHandler struct {
-	Serv  module.StockUsecae
-	CSRF []byte
+	Serv    module.StockUsecae
+	supServ module.SupplierUsecase
+	CSRF    []byte
 }
 
 // StockInit is to initialize the rest handler for domain stco
-func StockInit(userCase module.StockUsecae, cs []byte) StockHandler {
-	return &stockHandler{Serv: userCase, CSRF: cs}
+func StockInit(userCase module.StockUsecae, sup module.SupplierUsecase, cs []byte) StockHandler {
+	return &stockHandler{Serv: userCase, supServ: sup, CSRF: cs}
 }
 
 func (ah *stockHandler) Stocks(c *gin.Context) {
-	stocks, _ := ah.Serv.Get()
-	c.JSON(http.StatusOK, gin.H{"stock-list": stocks})
+	var newStock []model.Stock
+	stocks, _ := ah.Serv.GetStocks()
+	for _, stock := range stocks {
+		sup, err := ah.supServ.GetSupplierBySupplierID(stock.SupplierID)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": err})
+			return
+		}
+		stock.Supplier_List = sup
+		newStock = append(newStock, stock)
+	}
+	c.JSON(http.StatusOK, gin.H{"stock-list": newStock})
 }
 func (ah *stockHandler) StockById(c *gin.Context) {
 	param := c.Param("id")
-	id,err:=uuid.FromString(param)
-	if err!=nil{
+	id, err := uuid.FromString(param)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
 		return
 	}
-	stock, err := ah.Serv.GetById(id)
+	stock, err := ah.Serv.GetStockByID(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -49,8 +60,8 @@ func (ah *stockHandler) StockById(c *gin.Context) {
 func (ah *stockHandler) UpdateStock(c *gin.Context) {
 	var stock *model.Stock
 	param := c.Param("id")
-	id,err:=uuid.FromString(param)
-	if err!=nil{
+	id, err := uuid.FromString(param)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
 		return
 	}
@@ -60,7 +71,7 @@ func (ah *stockHandler) UpdateStock(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": er.Error()})
 		return
 	}
-	_, err = ah.Serv.Update(stock)
+	_, err = ah.Serv.UpdateStock(stock)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
@@ -69,13 +80,18 @@ func (ah *stockHandler) UpdateStock(c *gin.Context) {
 }
 func (ah *stockHandler) CreateStock(c *gin.Context) {
 	var stock model.Stock
-	c.BindJSON(&stock)
-	_, err := ah.Serv.Create(stock)
+	err := c.BindJSON(&stock)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	_, err = ah.Serv.CreateStock(stock)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create new stock failed! !"})
 		return
 	}
-	stocks, err := ah.Serv.Get()
+	stocks, err := ah.Serv.GetStocks()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "create new stock failed! !", "statusCode": http.StatusInternalServerError})
 	}
@@ -83,16 +99,16 @@ func (ah *stockHandler) CreateStock(c *gin.Context) {
 }
 func (ah *stockHandler) DeleteStock(c *gin.Context) {
 	param := c.Param("id")
-	id,err:=uuid.FromString(param)
-	if err!=nil{
+	id, err := uuid.FromString(param)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
 		return
 	}
-	err = ah.Serv.Delete(id)
+	err = ah.Serv.DeleteStock(id)
 	fmt.Println("line 141", err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "statusCode": http.StatusBadRequest})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"delete": "successed", "statusCode": http.StatusOK})
+	c.JSON(http.StatusOK, gin.H{"statusCode": http.StatusOK})
 }

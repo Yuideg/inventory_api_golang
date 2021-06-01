@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/Yideg/inventory_app/internal/constant/model"
 	"github.com/Yideg/inventory_app/internal/module"
+	"github.com/Yideg/inventory_app/pkg/comparision"
 	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"net/http"
 )
 
@@ -27,25 +29,40 @@ func ProductInit(userCase module.ProductUsecase, cs []byte) ProductHandler {
 }
 
 func (ah *productHandler) Products(c *gin.Context) {
-	products, _ := ah.Serv.Get()
-	fmt.Println("data", products)
-	c.JSON(http.StatusOK, gin.H{"products": products})
+	var items []model.Product
+	products, _ := ah.Serv.GetProducts()
+	for _,item:= range products{
+		ExpirationTime:=item.ExpiredOn
+		if comparision.CheckExpirationTime(ExpirationTime) {
+			items=append(items,item)
+		}
+		continue
+	}
+	if len(items)==0 {
+		c.JSON(http.StatusOK, gin.H{"products": "No Active Product Found. Product may be expired!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"products": items})
 }
 func (ah *productHandler) ProductById(c *gin.Context) {
-	fmt.Println("start handler")
 	param := c.Param("id")
-	//there is somthing to be done since the id is a type isbn data type not string but for temporary use as string
-	//
-	//
-	role, err := ah.Serv.GetById(param)
+	id,err:=uuid.FromString(param)
+	if err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
+		return
+	}
+	item, err := ah.Serv.GetProductsByID(id)
 	if err != nil {
 		fmt.Println("line 54", err)
-		fmt.Println("data=", role)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"product": role})
-
+	ExpirationTime:=item.ExpiredOn
+	if comparision.CheckExpirationTime(ExpirationTime) {
+		c.JSON(http.StatusOK, gin.H{"Products": item})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"orders": "No Active Product Found. Product May be Expired!"})
 }
 func (ah *productHandler) UpdateProduct(c *gin.Context) {
 	var product *model.Product
@@ -60,7 +77,7 @@ func (ah *productHandler) UpdateProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": er.Error()})
 		return
 	}
-	_, err:= ah.Serv.Update(product)
+	_, err:= ah.Serv.UpdateProduct(product)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
@@ -70,12 +87,12 @@ func (ah *productHandler) UpdateProduct(c *gin.Context) {
 func (ah *productHandler) CreateProduct(c *gin.Context) {
 	var product model.Product
 	c.BindJSON(&product)
-	_, err := ah.Serv.Create(product)
+	_, err := ah.Serv.CreateProduct(product)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": " product registration failed! !"})
 		return
 	}
-	prod, err := ah.Serv.Get()
+	prod, err := ah.Serv.GetProducts()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": " product registration failed! !", "statusCode": http.StatusInternalServerError})
 	}
@@ -83,11 +100,12 @@ func (ah *productHandler) CreateProduct(c *gin.Context) {
 }
 func (ah *productHandler) DeleteProduct(c *gin.Context) {
 	param := c.Param("id")
-	if param ==""{
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Input id not provided! ", "statusCode": http.StatusNotAcceptable})
+	id,err:=uuid.FromString(param)
+	if err!=nil{
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Type conversion Failed!"})
 		return
 	}
-	err := ah.Serv.Delete(param)
+	err = ah.Serv.DeleteProduct(id)
 	fmt.Println("line 141", err)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "statusCode": http.StatusBadRequest})
