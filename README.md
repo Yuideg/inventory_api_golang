@@ -1,11 +1,11 @@
-                    #Inventory APP
-                    You can structure your texts in the following way:
+#Inventory APP
+                   
 
-# Title
-## Subtitle
-### Another deeper title
+# Title    Inventory rest api
+## Subtitle  free best resrtapi for inventory app
+###  golang inventory rest api
 
-You can use one `#` all the way up to `######` six for different title sizes.
+
 this project deals with inventory application at back end architecture using 
          - gin framework 
          - pgxpool postgresql driver 
