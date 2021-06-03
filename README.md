@@ -69,7 +69,7 @@ import 'fmt'
 
 func main(){
 
-var p =fmt.Prinln
+var p =fmt.Println
 
 p("Hello Inventory App!")
 
