@@ -25,24 +25,24 @@ type User struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Username  string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-	Password  string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
-	FirstName string `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName  string `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Gender    string `protobuf:"bytes,6,opt,name=gender,proto3" json:"gender,omitempty"`
-	Email     string `protobuf:"bytes,7,opt,name=email,proto3" json:"email,omitempty"`
-	Country   string `protobuf:"bytes,8,opt,name=country,proto3" json:"country,omitempty"`
-	City      string `protobuf:"bytes,9,opt,name=city,proto3" json:"city,omitempty"`
-	State     string `protobuf:"bytes,10,opt,name=state,proto3" json:"state,omitempty"`
-	Zipcode   int32  `protobuf:"varint,11,opt,name=zipcode,proto3" json:"zipcode,omitempty"`
-	Street    string `protobuf:"bytes,12,opt,name=street,proto3" json:"street,omitempty"`
-	Latitude  string `protobuf:"bytes,13,opt,name=latitude,proto3" json:"latitude,omitempty"`
-	Longitude string `protobuf:"bytes,14,opt,name=longitude,proto3" json:"longitude,omitempty"`
-	Phone     string `protobuf:"bytes,15,opt,name=phone,proto3" json:"phone,omitempty"`
-	RoleId    string `protobuf:"bytes,16,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
-	CreatedOn string `protobuf:"bytes,17,opt,name=created_on,json=createdOn,proto3" json:"created_on,omitempty"`
-	UpdatedOn string `protobuf:"bytes,18,opt,name=updated_on,json=updatedOn,proto3" json:"updated_on,omitempty"`
+	Id        string  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username  string  `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Password  string  `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	FirstName string  `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName  string  `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Gender    string  `protobuf:"bytes,6,opt,name=gender,proto3" json:"gender,omitempty"`
+	Email     string  `protobuf:"bytes,7,opt,name=email,proto3" json:"email,omitempty"`
+	Country   string  `protobuf:"bytes,8,opt,name=country,proto3" json:"country,omitempty"`
+	City      string  `protobuf:"bytes,9,opt,name=city,proto3" json:"city,omitempty"`
+	State     string  `protobuf:"bytes,10,opt,name=state,proto3" json:"state,omitempty"`
+	Zipcode   int32   `protobuf:"varint,11,opt,name=zipcode,proto3" json:"zipcode,omitempty"`
+	Street    string  `protobuf:"bytes,12,opt,name=street,proto3" json:"street,omitempty"`
+	Latitude  float32 `protobuf:"fixed32,13,opt,name=latitude,proto3" json:"latitude,omitempty"`
+	Longitude float32 `protobuf:"fixed32,14,opt,name=longitude,proto3" json:"longitude,omitempty"`
+	Phone     string  `protobuf:"bytes,15,opt,name=phone,proto3" json:"phone,omitempty"`
+	RoleId    string  `protobuf:"bytes,16,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+	CreatedOn string  `protobuf:"bytes,17,opt,name=created_on,json=createdOn,proto3" json:"created_on,omitempty"`
+	UpdatedOn string  `protobuf:"bytes,18,opt,name=updated_on,json=updatedOn,proto3" json:"updated_on,omitempty"`
 }
 
 func (x *User) Reset() {
@@ -161,18 +161,18 @@ func (x *User) GetStreet() string {
 	return ""
 }
 
-func (x *User) GetLatitude() string {
+func (x *User) GetLatitude() float32 {
 	if x != nil {
 		return x.Latitude
 	}
-	return ""
+	return 0
 }
 
-func (x *User) GetLongitude() string {
+func (x *User) GetLongitude() float32 {
 	if x != nil {
 		return x.Longitude
 	}
-	return ""
+	return 0
 }
 
 func (x *User) GetPhone() string {
@@ -670,9 +670,9 @@ var file_user_user_proto_rawDesc = []byte{
 	0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x7a, 0x69, 0x70, 0x63, 0x6f, 0x64, 0x65,
 	0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x65, 0x65, 0x74, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x06, 0x73, 0x74, 0x72, 0x65, 0x65, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x61, 0x74, 0x69,
-	0x74, 0x75, 0x64, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x61, 0x74, 0x69,
+	0x74, 0x75, 0x64, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x02, 0x52, 0x08, 0x6c, 0x61, 0x74, 0x69,
 	0x74, 0x75, 0x64, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75, 0x64,
-	0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x6c, 0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75,
+	0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x02, 0x52, 0x09, 0x6c, 0x6f, 0x6e, 0x67, 0x69, 0x74, 0x75,
 	0x64, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x18, 0x0f, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x05, 0x70, 0x68, 0x6f, 0x6e, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x72, 0x6f, 0x6c, 0x65,
 	0x5f, 0x69, 0x64, 0x18, 0x10, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x6f, 0x6c, 0x65, 0x49,

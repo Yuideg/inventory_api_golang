@@ -23,8 +23,8 @@ message User {
     string state=10;
     int32 zipcode=11;
     string street=12;
-    string latitude=13;
-    string longitude=14;
+    float latitude=13;
+    float longitude=14;
     string  phone=15;
     string role_id=16;
     string created_on =17;

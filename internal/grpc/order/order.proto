@@ -40,10 +40,10 @@ message OrderByIDResponse {
     Order order = 1;
 }
 message OrderByUSerIDRequest {
-    string id = 1;
+    string user_id = 1;
 }
 message OrderByUserIDResponse {
-    Order order = 1;
+    repeated Order order = 1;
 }
 message OrderListRequest {}
 
